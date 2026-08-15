@@ -36,7 +36,11 @@ import {
   ArrowUpRight,
   Check,
   Clock,
-  Sparkles
+  Sparkles,
+  Command,
+  PlusCircle,
+  Activity,
+  Compass
 } from 'lucide-react';
 import { Project, SystemUser, DepartmentAlert } from '../types';
 import { formatCompactBDT } from '../utils/financial';
@@ -87,7 +91,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const [alertDrawerOpen, setAlertDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [projectSearchQuery, setProjectSearchQuery] = useState('');
-  
+  const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>('all');
+
   // Accordion open/close state for categories
   const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({});
 
@@ -101,7 +106,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const navigationGroups: NavGroup[] = useMemo(() => [
     {
       categoryId: 'executive',
-      categoryTitle: 'Executive & Overview',
+      categoryTitle: 'Executive & Strategic Suite',
       icon: Layers,
       items: [
         { id: 'overview', label: 'Executive Dashboard', icon: LayoutDashboard },
@@ -118,7 +123,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     },
     {
       categoryId: 'engineering',
-      categoryTitle: 'Civil & Site Engineering',
+      categoryTitle: 'Civil & Site Operations',
       icon: HardHat,
       items: [
         { id: 'subproject-gantt', label: 'CPM Gantt & Schedules', icon: Calendar },
@@ -141,7 +146,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     },
     {
       categoryId: 'hr',
-      categoryTitle: 'Human Capital & Payroll',
+      categoryTitle: 'Workforce & Payroll',
       icon: Users,
       items: [
         { id: 'employee-hr', label: 'Employee HR & Daily Hazira', icon: Users },
@@ -167,13 +172,20 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         { id: 'php-code', label: 'Developer API & Schema', icon: Code2 },
       ]
     }
-  ], [pendingApprovalsCount]);
+  ], [pendingApprovalsCount, projects.length]);
 
-  // Filter navigation items based on search query
+  // Filter navigation items based on category tabs and search query
   const filteredGroups = useMemo(() => {
-    if (!searchQuery.trim()) return navigationGroups;
+    let result = navigationGroups;
+
+    if (activeCategoryFilter !== 'all') {
+      result = result.filter(g => g.categoryId === activeCategoryFilter);
+    }
+
+    if (!searchQuery.trim()) return result;
+
     const q = searchQuery.toLowerCase();
-    return navigationGroups
+    return result
       .map(group => ({
         ...group,
         items: group.items.filter(item => 
@@ -182,7 +194,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         )
       }))
       .filter(group => group.items.length > 0);
-  }, [navigationGroups, searchQuery]);
+  }, [navigationGroups, searchQuery, activeCategoryFilter]);
 
   const filteredProjects = useMemo(() => {
     if (!projectSearchQuery.trim()) return projects;
@@ -207,8 +219,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   return (
     <div className="h-screen w-screen bg-[#f8fafc] font-sans text-slate-900 flex flex-col overflow-hidden">
       {/* Top Executive Header Bar */}
-      <header className="bg-[#090e17] text-slate-200 h-14 border-b border-slate-800/80 px-4 lg:px-6 flex items-center justify-between shrink-0 z-30 shadow-sm">
-        {/* Left: Branding & Breadcrumbs */}
+      <header className="bg-[#090d16] text-slate-200 h-14 border-b border-slate-800/80 px-4 lg:px-6 flex items-center justify-between shrink-0 z-30 shadow-md">
+        {/* Left: Branding & Dynamic Breadcrumbs */}
         <div className="flex items-center gap-3 lg:gap-6">
           {/* Mobile menu trigger */}
           <button
@@ -220,18 +232,19 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </button>
 
           {/* Company Brand Logo */}
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-blue-500/20 ring-1 ring-white/20">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentTab('overview')}>
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 flex items-center justify-center text-white font-black text-sm shadow-md shadow-blue-500/25 ring-1 ring-white/20">
               N
             </div>
             <div className="hidden sm:block leading-tight">
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <span className="text-white font-bold text-sm tracking-tight brand-font">NirmanERP</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-500/20 text-blue-400 font-mono font-semibold border border-blue-500/30">
-                  Cloud BD
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-500/15 text-blue-400 font-mono font-semibold border border-blue-500/30 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  BD Cloud v4.2
                 </span>
               </div>
-              <span className="text-[10px] text-slate-400 block font-normal">Civil & Real Estate Suite</span>
+              <span className="text-[10px] text-slate-400 block font-normal tracking-wide">Enterprise Civil Suite</span>
             </div>
           </div>
 
@@ -239,20 +252,35 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           {/* Dynamic Breadcrumbs */}
           <div className="hidden md:flex items-center gap-2 text-xs font-medium">
-            <span className="text-slate-500">{currentTabInfo.group}</span>
+            <span className="text-slate-400 flex items-center gap-1.5">
+              <Compass className="w-3.5 h-3.5 text-blue-400" />
+              {currentTabInfo.group}
+            </span>
             <span className="text-slate-600">/</span>
-            <span className="text-white font-semibold flex items-center gap-1.5">
+            <span className="text-white font-semibold px-2 py-0.5 rounded-md bg-slate-800/60 border border-slate-700/50">
               {currentTabInfo.item}
             </span>
           </div>
         </div>
 
-        {/* Right: PDC Quick Badge, Budget Gauge, Notifications & Actions */}
-        <div className="flex items-center gap-2 sm:gap-4">
+        {/* Right: PDC Alert, Quick Financial Meter, Approvals & Notifications */}
+        <div className="flex items-center gap-2 sm:gap-3.5">
+          {/* Quick Module Search Shortcut Launcher */}
+          <div className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 text-xs hover:border-slate-700 cursor-pointer transition" onClick={() => {
+            const input = document.getElementById('sidebar-search-input');
+            if (input) input.focus();
+          }}>
+            <Search className="w-3.5 h-3.5 text-slate-400" />
+            <span className="text-slate-400">Search module...</span>
+            <span className="ml-2 font-mono text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 border border-slate-700">
+              Ctrl+K
+            </span>
+          </div>
+
           {/* Real-time PDC Alert Badge */}
           <div 
             onClick={() => setCurrentTab('analytical-reports')}
-            className="hidden xl:flex items-center gap-2 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-medium hover:bg-amber-500/15 cursor-pointer transition"
+            className="hidden xl:flex items-center gap-2 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-medium hover:bg-amber-500/20 cursor-pointer transition"
           >
             <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0 animate-pulse" />
             <span>2 PDCs Maturing (৳ 39.5L)</span>
@@ -261,15 +289,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           {/* Quick Project Financial Gauge */}
           <div className="hidden lg:flex items-center gap-3 bg-slate-900/90 border border-slate-800 rounded-lg px-3 py-1 text-xs">
             <div className="text-right">
-              <div className="text-[10px] text-slate-400 uppercase font-mono">Budget Used ({budgetUsagePct}%)</div>
+              <div className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">Budget Spent ({budgetUsagePct}%)</div>
               <div className="font-mono font-semibold text-slate-200">
                 {formatCompactBDT(selectedProject.spent_bdt)} <span className="text-slate-500 font-normal">/ {formatCompactBDT(selectedProject.estimated_budget_bdt)}</span>
               </div>
             </div>
-            <div className="w-16 h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div className="w-16 h-2 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700/50">
               <div 
-                className={`h-full rounded-full ${
-                  budgetUsagePct > 90 ? 'bg-rose-500' : budgetUsagePct > 75 ? 'bg-amber-500' : 'bg-blue-500'
+                className={`h-full rounded-full transition-all duration-500 ${
+                  budgetUsagePct > 90 ? 'bg-gradient-to-r from-rose-500 to-red-600' : budgetUsagePct > 75 ? 'bg-gradient-to-r from-amber-500 to-amber-600' : 'bg-gradient-to-r from-blue-500 to-indigo-500'
                 }`}
                 style={{ width: `${budgetUsagePct}%` }}
               />
@@ -279,12 +307,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           {/* Stage Gate Pending Button */}
           <button
             onClick={() => setCurrentTab('workflow')}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-sm transition"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-sm shadow-blue-500/20 transition cursor-pointer"
           >
             <Workflow className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Approvals</span>
             {pendingApprovalsCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-white text-blue-700 text-[10px] font-mono font-bold">
+              <span className="px-1.5 py-0.2 rounded-full bg-white text-blue-700 text-[10px] font-mono font-bold shadow-xs">
                 {pendingApprovalsCount}
               </span>
             )}
@@ -294,12 +322,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           <div className="relative">
             <button
               onClick={() => setAlertDrawerOpen(!alertDrawerOpen)}
-              className="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60 transition relative"
+              className="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition relative cursor-pointer"
               title="System Alerts & Compliance Notifications"
             >
-              <Bell className="w-4 h-4" />
+              <Bell className="w-4 h-4 text-slate-300" />
               {alerts.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-mono font-bold flex items-center justify-center ring-2 ring-[#090e17]">
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-mono font-bold flex items-center justify-center ring-2 ring-[#090d16] animate-pulse">
                   {alerts.length}
                 </span>
               )}
@@ -308,14 +336,14 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             {/* Notifications Dropdown Drawer */}
             {alertDrawerOpen && (
               <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-[#0f172a] border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden animate-fade-in">
-                <div className="p-3.5 bg-[#090e17] border-b border-slate-800 flex items-center justify-between">
+                <div className="p-3.5 bg-[#090d16] border-b border-slate-800 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Bell className="w-4 h-4 text-amber-400" />
                     <span className="text-white font-semibold text-xs">Department Notifications ({alerts.length})</span>
                   </div>
                   <button 
                     onClick={() => setAlertDrawerOpen(false)}
-                    className="text-slate-400 hover:text-white text-xs"
+                    className="text-slate-400 hover:text-white text-xs cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -337,13 +365,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     </div>
                   ))}
                 </div>
-                <div className="p-2.5 bg-[#090e17] border-t border-slate-800 text-center">
+                <div className="p-2.5 bg-[#090d16] border-t border-slate-800 text-center">
                   <button
                     onClick={() => {
                       setCurrentTab('workflow');
                       setAlertDrawerOpen(false);
                     }}
-                    className="text-xs text-blue-400 hover:text-blue-300 font-medium"
+                    className="text-xs text-blue-400 hover:text-blue-300 font-semibold cursor-pointer"
                   >
                     View All Department Workflow Queues →
                   </button>
@@ -357,19 +385,19 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       {/* Main Framework Body */}
       <div className="flex flex-1 overflow-hidden relative">
         {/* Modern Left Sidebar Navigation */}
-        <aside className={`hidden lg:flex flex-col bg-[#0b1120] text-slate-300 border-r border-slate-800/90 shrink-0 transition-all duration-200 z-20 ${
-          sidebarCollapsed ? 'w-18' : 'w-72'
+        <aside className={`hidden lg:flex flex-col bg-[#0d1322] text-slate-300 border-r border-slate-800/90 shrink-0 transition-all duration-250 ease-in-out z-20 ${
+          sidebarCollapsed ? 'w-20' : 'w-72'
         }`}>
           {/* Active Cost Center / Project Selector */}
-          <div className="p-3 border-b border-slate-800/80 bg-[#090e17]/60">
+          <div className="p-3 border-b border-slate-800/80 bg-[#090d16]/70">
             {!sidebarCollapsed ? (
               <div>
                 <div className="flex items-center justify-between text-[11px] text-slate-400 font-medium mb-1.5">
-                  <span className="flex items-center gap-1">
-                    <Briefcase className="w-3 h-3 text-blue-400" />
-                    <span>Cost Center</span>
+                  <span className="flex items-center gap-1.5 text-slate-300 font-semibold">
+                    <Briefcase className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Active Project</span>
                   </span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-blue-950 text-blue-300 border border-blue-800">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800/80 font-bold">
                     {selectedProject.project_code}
                   </span>
                 </div>
@@ -377,27 +405,30 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 <div className="relative">
                   <button
                     onClick={() => setProjectDropdownOpen(!projectDropdownOpen)}
-                    className="w-full flex items-center justify-between bg-slate-900 hover:bg-slate-800 border border-slate-700/80 hover:border-blue-500/50 rounded-xl p-2.5 text-left text-xs font-semibold text-slate-100 transition shadow-sm cursor-pointer"
+                    className="w-full flex items-center justify-between bg-slate-900/90 hover:bg-slate-800/90 border border-slate-700/70 hover:border-blue-500/50 rounded-xl p-2.5 text-left text-xs font-semibold text-slate-100 transition shadow-xs cursor-pointer"
                   >
                     <div className="truncate pr-2">
-                      <div className="text-xs font-semibold text-white truncate">{selectedProject.project_name}</div>
-                      <div className="text-[10px] text-slate-400 font-normal truncate mt-0.5">{selectedProject.location}</div>
+                      <div className="text-xs font-bold text-white truncate">{selectedProject.project_name}</div>
+                      <div className="text-[10px] text-slate-400 font-normal truncate mt-0.5 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                        {selectedProject.location}
+                      </div>
                     </div>
-                    <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${projectDropdownOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${projectDropdownOpen ? 'rotate-180 text-blue-400' : ''}`} />
                   </button>
 
                   {/* Project Dropdown Selector Modal */}
                   {projectDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-1.5 bg-[#0f172a] border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden py-1.5">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#0f172a] border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden py-1.5 animate-fade-in">
                       <div className="p-2 border-b border-slate-800">
                         <div className="relative">
                           <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                           <input
                             type="text"
-                            placeholder="Filter projects..."
+                            placeholder="Filter active projects..."
                             value={projectSearchQuery}
                             onChange={(e) => setProjectSearchQuery(e.target.value)}
-                            className="w-full pl-8 pr-3 py-1 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                            className="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
                             onClick={(e) => e.stopPropagation()}
                           />
                         </div>
@@ -416,18 +447,18 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                               }}
                               className={`w-full text-left px-3 py-2.5 text-xs transition flex items-center justify-between cursor-pointer ${
                                 isSelected
-                                  ? 'bg-blue-600/20 text-white font-bold border-l-2 border-blue-500'
-                                  : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                                  ? 'bg-blue-600/20 text-white font-bold border-l-3 border-blue-500'
+                                  : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
                               }`}
                             >
                               <div className="truncate">
                                 <div className="flex items-center gap-1.5">
                                   <span className="text-[10px] font-mono text-blue-400 font-semibold">{proj.project_code}</span>
-                                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400">
+                                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 font-medium">
                                     {proj.status}
                                   </span>
                                 </div>
-                                <div className="truncate font-medium text-slate-200 mt-0.5">{proj.project_name}</div>
+                                <div className="truncate font-semibold text-slate-100 mt-0.5">{proj.project_name}</div>
                               </div>
                               {isSelected && <Check className="w-4 h-4 text-blue-400 ml-2 shrink-0" />}
                             </button>
@@ -435,13 +466,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         })}
                       </div>
 
-                      <div className="p-2 border-t border-slate-800 bg-[#090e17]">
+                      <div className="p-2 border-t border-slate-800 bg-[#090d16]">
                         <button
                           onClick={() => {
                             setCurrentTab('project-profiles');
                             setProjectDropdownOpen(false);
                           }}
-                          className="w-full py-1.5 px-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
+                          className="w-full py-1.5 px-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
                         >
                           <Building2 className="w-3.5 h-3.5" />
                           <span>+ Add & Manage Project Profiles</span>
@@ -455,41 +486,106 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <div className="flex flex-col items-center justify-center py-1">
                 <button
                   onClick={() => setSidebarCollapsed(false)}
-                  className="w-9 h-9 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center text-blue-400 hover:text-white hover:bg-slate-800 transition"
+                  className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700/80 flex items-center justify-center text-blue-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
                   title={`${selectedProject.project_code} - ${selectedProject.project_name}`}
                 >
-                  <Briefcase className="w-4 h-4" />
+                  <Briefcase className="w-5 h-5" />
                 </button>
               </div>
             )}
           </div>
 
-          {/* Quick Menu Search (when not collapsed) */}
+          {/* Module Search Bar & Category Filter Tags */}
           {!sidebarCollapsed && (
-            <div className="px-3 pt-3 pb-1">
+            <div className="px-3 pt-3 pb-1 space-y-2">
               <div className="relative">
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
+                  id="sidebar-search-input"
                   type="text"
-                  placeholder="Jump to module..."
+                  placeholder="Filter menu modules..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 bg-slate-900/80 border border-slate-800 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/80 transition"
+                  className="w-full pl-8 pr-7 py-1.5 bg-slate-900/90 border border-slate-800 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs cursor-pointer"
                   >
-                    <X className="w-3 h-3" />
+                    <X className="w-3.5 h-3.5" />
                   </button>
                 )}
+              </div>
+
+              {/* Quick Category Filter Pills */}
+              <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pb-1 text-[10px]">
+                <button
+                  onClick={() => setActiveCategoryFilter('all')}
+                  className={`px-2 py-0.5 rounded-md font-medium transition shrink-0 cursor-pointer ${
+                    activeCategoryFilter === 'all'
+                      ? 'bg-blue-600 text-white font-bold'
+                      : 'bg-slate-800/80 text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  All
+                </button>
+                <button
+                  onClick={() => setActiveCategoryFilter('executive')}
+                  className={`px-2 py-0.5 rounded-md font-medium transition shrink-0 cursor-pointer ${
+                    activeCategoryFilter === 'executive'
+                      ? 'bg-blue-600 text-white font-bold'
+                      : 'bg-slate-800/80 text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  Exec
+                </button>
+                <button
+                  onClick={() => setActiveCategoryFilter('engineering')}
+                  className={`px-2 py-0.5 rounded-md font-medium transition shrink-0 cursor-pointer ${
+                    activeCategoryFilter === 'engineering'
+                      ? 'bg-blue-600 text-white font-bold'
+                      : 'bg-slate-800/80 text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  Civil
+                </button>
+                <button
+                  onClick={() => setActiveCategoryFilter('procurement')}
+                  className={`px-2 py-0.5 rounded-md font-medium transition shrink-0 cursor-pointer ${
+                    activeCategoryFilter === 'procurement'
+                      ? 'bg-blue-600 text-white font-bold'
+                      : 'bg-slate-800/80 text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  Store
+                </button>
+                <button
+                  onClick={() => setActiveCategoryFilter('hr')}
+                  className={`px-2 py-0.5 rounded-md font-medium transition shrink-0 cursor-pointer ${
+                    activeCategoryFilter === 'hr'
+                      ? 'bg-blue-600 text-white font-bold'
+                      : 'bg-slate-800/80 text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  HR
+                </button>
+                <button
+                  onClick={() => setActiveCategoryFilter('finance')}
+                  className={`px-2 py-0.5 rounded-md font-medium transition shrink-0 cursor-pointer ${
+                    activeCategoryFilter === 'finance'
+                      ? 'bg-blue-600 text-white font-bold'
+                      : 'bg-slate-800/80 text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  Finance
+                </button>
               </div>
             </div>
           )}
 
           {/* Navigation Accordion List */}
-          <nav className="p-2.5 space-y-4 flex-1 overflow-y-auto scrollbar-thin">
+          <nav className="p-2.5 space-y-3.5 flex-1 overflow-y-auto scrollbar-thin">
             {filteredGroups.map((group) => {
               const isGroupCollapsed = collapsedCategories[group.categoryId] && !searchQuery;
               return (
@@ -497,10 +593,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   {!sidebarCollapsed ? (
                     <button
                       onClick={() => toggleCategory(group.categoryId)}
-                      className="w-full flex items-center justify-between px-2 py-1 text-[11px] font-semibold text-slate-400 hover:text-slate-200 tracking-wider uppercase transition cursor-pointer"
+                      className="w-full flex items-center justify-between px-2 py-1 text-[11px] font-bold text-slate-400 hover:text-slate-200 tracking-wider uppercase transition cursor-pointer"
                     >
-                      <span>{group.categoryTitle}</span>
-                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isGroupCollapsed ? '-rotate-90 text-slate-600' : 'text-slate-400'}`} />
+                      <span className="flex items-center gap-1.5">
+                        <span>{group.categoryTitle}</span>
+                      </span>
+                      <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isGroupCollapsed ? '-rotate-90 text-slate-600' : 'text-slate-400'}`} />
                     </button>
                   ) : (
                     <div className="h-px bg-slate-800/80 my-2 mx-1" />
@@ -516,25 +614,28 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                             key={item.id}
                             onClick={() => setCurrentTab(item.id)}
                             title={sidebarCollapsed ? item.label : undefined}
-                            className={`w-full flex items-center ${
+                            className={`w-full flex items-center relative ${
                               sidebarCollapsed ? 'justify-center p-2.5' : 'justify-between px-3 py-2'
-                            } rounded-xl text-xs transition cursor-pointer ${
+                            } rounded-xl text-xs transition-all duration-150 cursor-pointer ${
                               isActive
-                                ? 'bg-blue-600 text-white font-semibold shadow-sm shadow-blue-500/20'
-                                : 'text-slate-400 hover:bg-slate-800/70 hover:text-slate-100'
+                                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-md shadow-blue-500/20'
+                                : 'text-slate-400 hover:bg-slate-800/70 hover:text-slate-100 font-medium'
                             }`}
                           >
+                            {isActive && !sidebarCollapsed && (
+                              <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-cyan-400 rounded-r-full" />
+                            )}
                             <div className="flex items-center gap-2.5 truncate">
-                              <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                              <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? 'text-white' : 'text-slate-400'}`} />
                               {!sidebarCollapsed && (
                                 <span className="truncate">{item.label}</span>
                               )}
                             </div>
                             {!sidebarCollapsed && item.badge && (
                               <span
-                                className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold shrink-0 ${
+                                className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold shrink-0 ${
                                   isActive
-                                    ? 'bg-white text-blue-700'
+                                    ? 'bg-white text-blue-700 shadow-xs'
                                     : item.badgeType === 'warning'
                                     ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                                     : 'bg-slate-800 text-slate-300'
@@ -553,15 +654,41 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             })}
           </nav>
 
+          {/* Quick Action Widget inside expanded Sidebar */}
+          {!sidebarCollapsed && (
+            <div className="mx-3 mb-2 p-3 rounded-xl bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 text-xs space-y-2">
+              <div className="flex items-center justify-between text-slate-300 font-semibold">
+                <span className="flex items-center gap-1.5">
+                  <Activity className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                  <span>DPR Entry Status</span>
+                </span>
+                <span className="text-[10px] text-emerald-400 font-mono">Today Active</span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-tight">
+                Submit today's labor hazira & site progress report before 6:00 PM.
+              </p>
+              <button
+                onClick={() => setCurrentTab('dpr')}
+                className="w-full py-1 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-400 hover:text-white font-semibold text-[11px] transition flex items-center justify-center gap-1 cursor-pointer border border-slate-700/60"
+              >
+                <PlusCircle className="w-3.5 h-3.5" />
+                <span>+ Daily Progress Entry</span>
+              </button>
+            </div>
+          )}
+
           {/* Sidebar Collapse Toggle Rail Button */}
-          <div className="p-2 border-t border-slate-800/80 flex items-center justify-between bg-[#090e17]/40">
+          <div className="p-2 border-t border-slate-800/80 flex items-center justify-between bg-[#090d16]/50">
             {!sidebarCollapsed ? (
               <button
                 onClick={() => setSidebarCollapsed(true)}
-                className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 text-xs transition cursor-pointer"
+                className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 text-xs font-medium transition cursor-pointer"
               >
-                <PanelLeftClose className="w-4 h-4" />
-                <span>Collapse Sidebar</span>
+                <span className="flex items-center gap-2">
+                  <PanelLeftClose className="w-4 h-4 text-slate-400" />
+                  <span>Collapse Navigation</span>
+                </span>
+                <span className="text-[10px] text-slate-500 font-mono">⌘B</span>
               </button>
             ) : (
               <button
@@ -575,26 +702,26 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </div>
 
           {/* User Profile & Role Info */}
-          <div className="p-3 bg-[#090e17] border-t border-slate-800/80 flex items-center justify-between text-xs">
+          <div className="p-3 bg-[#090d16] border-t border-slate-800/80 flex items-center justify-between text-xs">
             {!sidebarCollapsed ? (
               <>
                 <div className="flex items-center gap-2.5 truncate">
                   <div className="relative">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 text-white font-bold flex items-center justify-center text-xs font-mono ring-1 ring-white/10 shadow-sm">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white font-bold flex items-center justify-center text-xs font-mono ring-2 ring-white/10 shadow-sm">
                       {currentUser.avatarInitials}
                     </div>
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[#090e17] absolute -bottom-0.5 -right-0.5" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#090d16] absolute -bottom-0.5 -right-0.5" />
                   </div>
                   <div className="truncate leading-tight">
-                    <span className="text-white font-semibold block truncate text-xs">{currentUser.name}</span>
-                    <span className="text-[10px] text-slate-400 truncate block mt-0.5">
+                    <span className="text-white font-bold block truncate text-xs">{currentUser.name}</span>
+                    <span className="text-[10px] text-slate-400 truncate block mt-0.5 font-medium">
                       {currentUser.role.replace('_', ' ')}
                     </span>
                   </div>
                 </div>
                 <button
                   onClick={onLogout}
-                  className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 transition cursor-pointer"
+                  className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 transition cursor-pointer"
                   title="Sign Out"
                 >
                   <LogOut className="w-4 h-4" />
@@ -602,12 +729,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               </>
             ) : (
               <div className="w-full flex flex-col items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 text-white font-bold flex items-center justify-center text-xs font-mono shadow-sm">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white font-bold flex items-center justify-center text-xs font-mono shadow-sm">
                   {currentUser.avatarInitials}
                 </div>
                 <button
                   onClick={onLogout}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 transition cursor-pointer"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 transition cursor-pointer"
                   title="Sign Out"
                 >
                   <LogOut className="w-3.5 h-3.5" />
@@ -624,13 +751,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs"
               onClick={() => setMobileMenuOpen(false)}
             />
-            <div className="relative w-80 bg-[#0b1120] text-slate-300 flex flex-col h-full z-10 shadow-2xl border-r border-slate-800">
-              <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-[#090e17]">
+            <div className="relative w-80 bg-[#0d1322] text-slate-300 flex flex-col h-full z-10 shadow-2xl border-r border-slate-800">
+              <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-[#090d16]">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xs">
                     N
                   </div>
-                  <span className="text-white font-bold text-sm">NirmanERP Bangladesh</span>
+                  <span className="text-white font-bold text-sm brand-font">NirmanERP Bangladesh</span>
                 </div>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
@@ -644,7 +771,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <nav className="p-3 space-y-4 flex-1 overflow-y-auto">
                 {navigationGroups.map((group) => (
                   <div key={group.categoryId} className="space-y-1">
-                    <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 py-1">
+                    <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">
                       {group.categoryTitle}
                     </div>
                     <div className="space-y-0.5">
@@ -660,7 +787,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                             }}
                             className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition ${
                               isActive
-                                ? 'bg-blue-600 text-white font-semibold'
+                                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold'
                                 : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                             }`}
                           >
@@ -682,7 +809,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               </nav>
 
               {/* Mobile User Profile */}
-              <div className="p-4 bg-[#090e17] border-t border-slate-800 flex items-center justify-between">
+              <div className="p-4 bg-[#090d16] border-t border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2 truncate">
                   <div className="w-7 h-7 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs">
                     {currentUser.avatarInitials}
@@ -706,28 +833,46 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {/* Main Content Area Viewport */}
         <main className="flex-1 flex flex-col overflow-hidden min-w-0 bg-[#f8fafc]">
           {/* Secondary Workspace Context Subheader */}
-          <div className="bg-white border-b border-slate-200/90 px-6 py-3 hidden sm:flex items-center justify-between shrink-0 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+          <div className="bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-6 py-3.5 hidden sm:flex items-center justify-between shrink-0 shadow-xs">
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <span className="text-slate-900 font-bold text-base">{selectedProject.project_name}</span>
-                <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+              <div className="flex items-center gap-2.5">
+                <span className="text-slate-900 font-extrabold text-base tracking-tight font-heading">{selectedProject.project_name}</span>
+                <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                   {selectedProject.project_code}
                 </span>
-                <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   {selectedProject.status}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-slate-600">
-              <div className="flex items-center gap-1.5">
-                <span className="text-slate-400">Location:</span>
-                <strong className="text-slate-700">{selectedProject.location}</strong>
+            <div className="flex items-center gap-4 text-xs">
+              <div className="flex items-center gap-1.5 text-slate-600">
+                <span className="text-slate-400">Site Location:</span>
+                <strong className="text-slate-800 font-semibold">{selectedProject.location}</strong>
               </div>
               <span className="text-slate-300">•</span>
-              <div className="flex items-center gap-1.5">
-                <span className="text-slate-400">Target Handover:</span>
-                <strong className="text-slate-700">{selectedProject.target_completion_date}</strong>
+              <div className="flex items-center gap-1.5 text-slate-600">
+                <span className="text-slate-400">Handover Target:</span>
+                <strong className="text-slate-800 font-semibold">{selectedProject.target_completion_date}</strong>
+              </div>
+
+              <div className="flex items-center gap-2 ml-2">
+                <button
+                  onClick={() => setCurrentTab('dpr')}
+                  className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 text-xs font-semibold transition cursor-pointer flex items-center gap-1"
+                >
+                  <PlusCircle className="w-3.5 h-3.5" />
+                  <span>+ Quick DPR</span>
+                </button>
+                <button
+                  onClick={() => setCurrentTab('po-engine')}
+                  className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 text-xs font-semibold transition cursor-pointer flex items-center gap-1"
+                >
+                  <ShoppingCart className="w-3.5 h-3.5" />
+                  <span>+ Issue PO</span>
+                </button>
               </div>
             </div>
           </div>

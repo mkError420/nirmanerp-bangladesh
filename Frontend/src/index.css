@@ -1,144 +1,259 @@
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Lora:ital,wght@0,400..700;1,400..700&family=Cinzel:wght@400..900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
-/* Classic Enterprise Design System Tokens & Typography */
+/* Enterprise Modern Design System Tokens & Typography */
 :root {
-  --erp-bg-main: #f4f6f9;
-  --erp-header-bg: #0b1329;
-  --erp-sidebar-bg: #0b1120;
-  --erp-border: #cbd5e1;
-  --erp-navy: #1e3a8a;
-  --erp-gold: #b45309;
-  --erp-emerald: #047857;
-  --erp-crimson: #991b1b;
+  --erp-bg-main: #f8fafc;
+  --erp-header-bg: #090d16;
+  --erp-sidebar-bg: #0d1322;
+  --erp-border: #e2e8f0;
+  --erp-primary: #2563eb;
+  --erp-primary-hover: #1d4ed8;
+  --erp-accent: #3b82f6;
+  --erp-emerald: #10b981;
+  --erp-amber: #f59e0b;
+  --erp-rose: #f43f5e;
 }
 
 @theme {
-  --font-sans: 'Merriweather', 'Lora', Georgia, Cambria, 'Times New Roman', Times, serif;
-  --font-serif: 'Lora', 'Merriweather', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Outfit', 'Plus Jakarta Sans', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 body, html {
-  font-family: 'Merriweather', 'Lora', Georgia, Cambria, "Times New Roman", Times, serif;
-  background-color: #f1f5f9;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #f8fafc;
   color: #0f172a;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
 }
 
-h1, h2, h3, h4, .font-heading {
-  font-family: 'Lora', 'Merriweather', Georgia, serif;
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .brand-font {
-  font-family: 'Cinzel', 'Lora', serif;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
-/* Classic Crisp Ledger Table Styling */
+/* Glassmorphism & Modern Card Styling */
+.glass-panel {
+  background: rgba(13, 19, 34, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.03), 0 1px 2px -1px rgba(15, 23, 42, 0.02);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+}
+
+/* Modern ERP Data Table Styling */
+.modern-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.modern-table th {
+  background-color: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 10px 14px;
+  text-align: left;
+}
+
+.modern-table td {
+  border-bottom: 1px solid #f1f5f9;
+  padding: 11px 14px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.modern-table tr:last-child td {
+  border-bottom: none;
+}
+
+.modern-table tr:hover td {
+  background-color: #f8fafc;
+}
+
+/* Legacy classic-table alias for backwards compatibility with modern aesthetics */
 .classic-table {
   border-collapse: separate;
   border-spacing: 0;
   width: 100%;
-  font-family: 'Merriweather', serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .classic-table th {
   background-color: #f8fafc;
-  color: #334155;
+  color: #475569;
   font-weight: 700;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 1.5px solid #94a3b8;
-  padding: 8px 12px;
+  border-bottom: 1.5px solid #cbd5e1;
+  padding: 10px 14px;
 }
 
 .classic-table td {
-  border-bottom: 1px solid #e2e8f0;
-  padding: 8px 12px;
-  font-size: 12px;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 10px 14px;
+  font-size: 13px;
 }
 
 .classic-table tr:nth-child(even) {
-  background-color: #f8fafc;
+  background-color: #fafafa;
 }
 
 .classic-table tr:hover {
   background-color: #f1f5f9;
 }
 
-/* Classic Crisp ERP Card Frame */
 .classic-card {
   background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
 }
 
 .classic-card-header {
   background: #0f172a;
   color: #ffffff;
-  padding: 10px 14px;
-  border-top-left-radius: 7px;
-  border-top-right-radius: 7px;
+  padding: 12px 16px;
+  border-top-left-radius: 11px;
+  border-top-right-radius: 11px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #334155;
-  font-family: 'Lora', serif;
+  border-bottom: 1px solid #1e293b;
+  font-family: 'Outfit', sans-serif;
 }
 
-/* Classic Badges */
+/* Modern Status & Priority Badges */
+.badge-indigo {
+  background-color: #e0e7ff;
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
+}
+
+.badge-emerald {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.badge-amber {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.badge-rose {
+  background-color: #ffe4e6;
+  color: #9f1239;
+  border: 1px solid #fecdd3;
+}
+
+/* Legacy badges mapped to clean modern badges */
 .classic-badge-gold {
   background-color: #fef3c7;
   color: #92400e;
   border: 1px solid #fcd34d;
-  font-weight: 700;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  border-radius: 6px;
+  padding: 2px 6px;
 }
 
 .classic-badge-navy {
   background-color: #e0e7ff;
-  color: #1e1b4b;
+  color: #3730a3;
   border: 1px solid #c7d2fe;
-  font-weight: 700;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  border-radius: 6px;
+  padding: 2px 6px;
 }
 
 .classic-badge-emerald {
   background-color: #d1fae5;
   color: #065f46;
   border: 1px solid #a7f3d0;
-  font-weight: 700;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  border-radius: 6px;
+  padding: 2px 6px;
 }
 
 .classic-badge-crimson {
   background-color: #fee2e2;
   color: #991b1b;
   border: 1px solid #fca5a5;
-  font-weight: 700;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  border-radius: 6px;
+  padding: 2px 6px;
 }
 
 /* Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 3px;
+  background: #cbd5e1;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+  background: #94a3b8;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 9999px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Print Optimization */
@@ -149,7 +264,7 @@ h1, h2, h3, h4, .font-heading {
   main {
     padding: 0 !important;
   }
-  .classic-card {
+  .classic-card, .glass-card {
     border: 1px solid #000 !important;
     box-shadow: none !important;
   }
