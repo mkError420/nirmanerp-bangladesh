@@ -1,0 +1,6 @@
+{
+  "name": "NirmanERP Bangladesh - Construction & Real Estate ERP",
+  "description": "Enterprise Construction & Real Estate ERP tailored for Bangladesh. Handles BOQ, Site Store, Subcontractor RA Bills, AIT/TDS withholding, Mushak VAT, Unit Sales Matrix, PDC cheques, and Auto GL Journals.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

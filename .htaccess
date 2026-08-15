@@ -1,0 +1,34 @@
+# InfinityFree .htaccess Configuration
+# NirmanERP Bangladesh Edition
+
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # API routes to PHP backend
+    RewriteRule ^api/(.*)$ php-backend/api.php [L,QSA]
+    
+    # Serve static files directly if they exist
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+    
+    # Serve React app for all other routes
+    RewriteRule ^(.*)$ index.html [L]
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Disable directory browsing
+Options -Indexes
+
+# Protect sensitive files
+<FilesMatch "\.(env|sql|log|md)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
