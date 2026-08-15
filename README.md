@@ -4,7 +4,7 @@ NirmanERP Bangladesh is an enterprise-grade ERP solution tailored for civil engi
 
 ---
 
-## 🚀 Key Modules & Architecture
+##  Key Modules & Architecture
 
 1. **Executive Directory & Project Profiles (Super Admin)**
    - Multi-project cost center registry with budget caps, land bank sizes (Katha), unit matrix, and project director allocations.
@@ -35,7 +35,7 @@ NirmanERP Bangladesh is an enterprise-grade ERP solution tailored for civil engi
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Frontend**: React, TypeScript, Vite, TailwindCSS, Lucide Icons.
 - **Backend**: Node.js, Express, REST API.
@@ -43,7 +43,7 @@ NirmanERP Bangladesh is an enterprise-grade ERP solution tailored for civil engi
 
 ---
 
-## 💻 Local Setup & Development
+##  Local Setup & Development
 
 ### Prerequisites
 - Node.js (v18+ recommended)
@@ -68,6 +68,6 @@ NirmanERP Bangladesh is an enterprise-grade ERP solution tailored for civil engi
 
 ---
 
-## 📄 License & Ownership
+##  License & Ownership
 
 © NirmanERP Bangladesh. All rights reserved. Proprietary enterprise construction software.
