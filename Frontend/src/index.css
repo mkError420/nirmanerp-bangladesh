@@ -1,132 +1,144 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Lora:ital,wght@0,400..700;1,400..700&family=Cinzel:wght@400..900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
-/* Modern ERP Design System Tokens & Typography */
+/* Classic Enterprise Design System Tokens & Typography */
 :root {
-  --erp-bg-main: #f8fafc;
+  --erp-bg-main: #f4f6f9;
   --erp-header-bg: #0b1329;
   --erp-sidebar-bg: #0b1120;
-  --erp-border: #e2e8f0;
-  --erp-navy: #1e40af;
-  --erp-gold: #d97706;
-  --erp-emerald: #059669;
-  --erp-crimson: #dc2626;
+  --erp-border: #cbd5e1;
+  --erp-navy: #1e3a8a;
+  --erp-gold: #b45309;
+  --erp-emerald: #047857;
+  --erp-crimson: #991b1b;
 }
 
 @theme {
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-sans: 'Merriweather', 'Lora', Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-serif: 'Lora', 'Merriweather', Georgia, serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 body, html {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background-color: #f8fafc;
+  font-family: 'Merriweather', 'Lora', Georgia, Cambria, "Times New Roman", Times, serif;
+  background-color: #f1f5f9;
   color: #0f172a;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  letter-spacing: -0.01em;
 }
 
-/* Modern Enterprise Table Styling */
+h1, h2, h3, h4, .font-heading {
+  font-family: 'Lora', 'Merriweather', Georgia, serif;
+}
+
+.brand-font {
+  font-family: 'Cinzel', 'Lora', serif;
+}
+
+/* Classic Crisp Ledger Table Styling */
 .classic-table {
   border-collapse: separate;
   border-spacing: 0;
   width: 100%;
+  font-family: 'Merriweather', serif;
 }
 
 .classic-table th {
   background-color: #f8fafc;
-  color: #475569;
-  font-weight: 600;
+  color: #334155;
+  font-weight: 700;
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  border-bottom: 1px solid #e2e8f0;
-  padding: 10px 14px;
+  letter-spacing: 0.05em;
+  border-bottom: 1.5px solid #94a3b8;
+  padding: 8px 12px;
 }
 
 .classic-table td {
-  border-bottom: 1px solid #f1f5f9;
-  padding: 10px 14px;
-  font-size: 13px;
-  color: #1e293b;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 8px 12px;
+  font-size: 12px;
 }
 
-.classic-table tr:hover {
+.classic-table tr:nth-child(even) {
   background-color: #f8fafc;
 }
 
-/* Modern Clean Card Frame */
+.classic-table tr:hover {
+  background-color: #f1f5f9;
+}
+
+/* Classic Crisp ERP Card Frame */
 .classic-card {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
-  transition: all 0.2s ease-in-out;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
 
 .classic-card-header {
   background: #0f172a;
   color: #ffffff;
-  padding: 12px 16px;
-  border-top-left-radius: 11px;
-  border-top-right-radius: 11px;
+  padding: 10px 14px;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid #334155;
+  font-family: 'Lora', serif;
 }
 
-/* Subtle Modern Badges */
+/* Classic Badges */
 .classic-badge-gold {
-  background-color: #fffbeb;
-  color: #b45309;
-  border: 1px solid #fde68a;
-  font-weight: 600;
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+  font-weight: 700;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 .classic-badge-navy {
-  background-color: #eff6ff;
-  color: #1d4ed8;
-  border: 1px solid #bfdbfe;
-  font-weight: 600;
+  background-color: #e0e7ff;
+  color: #1e1b4b;
+  border: 1px solid #c7d2fe;
+  font-weight: 700;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 .classic-badge-emerald {
-  background-color: #ecfdf5;
-  color: #047857;
+  background-color: #d1fae5;
+  color: #065f46;
   border: 1px solid #a7f3d0;
-  font-weight: 600;
+  font-weight: 700;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 .classic-badge-crimson {
-  background-color: #fef2f2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
-  font-weight: 600;
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+  font-weight: 700;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 /* Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 9999px;
+  background: #94a3b8;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #64748b;
 }
 
 /* Print Optimization */
@@ -142,4 +154,3 @@ body, html {
     box-shadow: none !important;
   }
 }
-

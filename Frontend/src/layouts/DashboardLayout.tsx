@@ -105,6 +105,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       icon: Layers,
       items: [
         { id: 'overview', label: 'Executive Dashboard', icon: LayoutDashboard },
+        { id: 'project-profiles', label: 'Project Directory & Profiles', icon: Building2, badge: `${projects.length} Active`, badgeType: 'info' },
         { 
           id: 'workflow', 
           label: 'Stage-Gate Approvals', 
@@ -225,7 +226,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </div>
             <div className="hidden sm:block leading-tight">
               <div className="flex items-center gap-1.5">
-                <span className="text-white font-bold text-sm tracking-tight">NirmanERP</span>
+                <span className="text-white font-bold text-sm tracking-tight brand-font">NirmanERP</span>
                 <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-500/20 text-blue-400 font-mono font-semibold border border-blue-500/30">
                   Cloud BD
                 </span>
@@ -432,6 +433,19 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                             </button>
                           );
                         })}
+                      </div>
+
+                      <div className="p-2 border-t border-slate-800 bg-[#090e17]">
+                        <button
+                          onClick={() => {
+                            setCurrentTab('project-profiles');
+                            setProjectDropdownOpen(false);
+                          }}
+                          className="w-full py-1.5 px-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
+                        >
+                          <Building2 className="w-3.5 h-3.5" />
+                          <span>+ Add & Manage Project Profiles</span>
+                        </button>
                       </div>
                     </div>
                   )}

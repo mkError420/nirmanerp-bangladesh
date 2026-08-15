@@ -23,6 +23,7 @@ import { UnitInventoryMatrix } from './pages/UnitInventoryMatrix';
 import { SiteDPRMobile } from './pages/SiteDPRMobile';
 import { TaxComplianceBD } from './pages/TaxComplianceBD';
 import { PHPBackendCodeViewer } from './pages/PHPBackendCodeViewer';
+import { ProjectProfiles } from './pages/ProjectProfiles';
 import { Login } from './pages/Login';
 
 import {
@@ -456,6 +457,19 @@ export default function App() {
           pdcCheques={pdcCheques}
           pendingApprovalsCount={stageGateApprovals.length}
           activeAlertsCount={departmentAlerts.length}
+          onNavigate={(tab) => setCurrentTab(tab)}
+        />
+      )}
+
+      {/* Project Profiles & Directory */}
+      {currentTab === 'project-profiles' && (
+        <ProjectProfiles
+          projects={projects}
+          setProjects={setProjects}
+          selectedProject={selectedProject}
+          setSelectedProject={setSelectedProject}
+          subProjects={subProjects}
+          currentUser={currentUser}
           onNavigate={(tab) => setCurrentTab(tab)}
         />
       )}
